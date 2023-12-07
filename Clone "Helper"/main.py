@@ -43,15 +43,17 @@ async def on_member_join(member):
 @bot.hybrid_command(name='clone-add', guild=output_server_id, description='Adds the pinged user to the clone list.')
 async def clone_add(ctx, user: discord.User):
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
-        with open('user_ids.txt', 'r') as file:
-            file_content = file.read()
-            if f'<@{user}>' not in file_content and user not in user_whitelist:
-                with open('user_ids.txt', 'a') as file:
-                    file.write(f'<@{user}>' + '\n')
-                await ctx.send(f'<@{user}> was added to the Clone List!')
-            else:
-                await ctx.send(f'Unable to add <@{user}>, as <@{user}> is already on the clone list, or was unable to be added to the list.')
-
+        if user not in user_whitelist:
+            with open('user_ids.txt', 'r') as file:
+                file_content = file.read()
+                if f'<@{user}>' not in file_content:
+                    with open('user_ids.txt', 'a') as file:
+                        file.write(f'<@{user}>' + '\n')
+                    await ctx.send(f'<@{user}> was added to the Clone List!')
+                else:
+                    await ctx.send(f'Unable to add <@{user}>, as <@{user}> is already on the clone list.')
+        else:
+            await ctx.send(f'Unable to add <@{user}>, as that user is unable to be added due to being on the safe-list.')
 # Command to clone the list in a specific channel
 @bot.hybrid_command(name='clone-list', guild=output_server_id, description='Lists out all known clones.')
 async def clone_list(ctx):
@@ -70,7 +72,3 @@ async def clone_list(ctx):
 
 # Run the bot with your token
 bot.run(os.environ['TOKEN'])
-
-
-# sus users
-# <@796388274826248204>
