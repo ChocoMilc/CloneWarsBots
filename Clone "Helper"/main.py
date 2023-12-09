@@ -15,11 +15,17 @@ output_server_id = 1177348953675665551
 channel_id = 1178816186759250110
 user_whitelist = [798673042988335144, 1147231541890658356]
 
-versionNum = '1.1.3'
-
 cloneids = 'user_ids.txt'
 template = 'message_template.txt'
 notes = 'patch_notes.txt'
+versionFile = 'version_number.txt'
+
+if not os.path.exists(versionFile):
+    with open(versionFile, 'w') as version_file:
+        version_file.write('1.0.0')
+
+with open(versionFile, 'r') as version_file:
+    versionNum = version_file.read()
 
 # Check and create necessary directories and files
 if not os.path.exists(cloneids):
@@ -35,7 +41,7 @@ if not os.path.exists(notes):
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print(f'Logged in as {bot.user.name}')
+    print(f'Logged in as {bot.user.name}, with version {versionNum}.')
 
 # Command to store user IDs
 @bot.event
@@ -53,6 +59,7 @@ async def on_member_join(member):
 async def clone_add(ctx, user: discord.User):
     user = user.id
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
+        print('Add Clone')
         if user not in user_whitelist:
             with open('user_ids.txt', 'r') as file:
                 file_content = file.read()
@@ -68,6 +75,7 @@ async def clone_add(ctx, user: discord.User):
 @bot.hybrid_command(name='clone-list', guild=output_server_id, description='Lists out all known clones.')
 async def clone_list(ctx):
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
+        print('Clone List')
         with open('user_ids.txt', 'r') as file:
             user_ids = file.readlines()
     
@@ -82,19 +90,23 @@ async def clone_list(ctx):
 
 @bot.hybrid_command(name='ping', guild=output_server_id, description='Pong!')
 async def ping(ctx):
+    print('Ping')
     await ctx.send("Pong! 🏓")
 
 @bot.hybrid_command(name='pong', guild=output_server_id, description='Ping!')
 async def pong(ctx):
+    print('Pong')
     await ctx.send("Ping! 🏓")
 
 @bot.hybrid_command(name='version', guild=output_server_id, description='Lists the current bot\'s version!')
 async def version(ctx):
+    print('Version')
     await ctx.send(f"The current bot version is __**{versionNum}**__.")
 
 @bot.hybrid_command(name='patch-notes', guild=output_server_id, description='Tells you the patch notes.')
 async def patch_note(ctx):
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
+        print('Patch Notes')
         with open(notes, 'r') as file:
             message = file.readlines()
             message = ''.join(message)
