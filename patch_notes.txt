@@ -1,0 +1,5 @@
+* Added Patch Notes.
+* Added `Pong` and `Ping` commands.
+* Added `Version` command.
+* Added `Patch Notes` command.
+* Fixed bug where adding users to clone list would break.
