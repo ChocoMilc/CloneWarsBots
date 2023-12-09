@@ -15,13 +15,22 @@ output_server_id = 1177348953675665551
 channel_id = 1178816186759250110
 user_whitelist = [798673042988335144, 1147231541890658356]
 
-# Check and create necessary directories and files
-if not os.path.exists('user_ids.txt'):
-    open('user_ids.txt', 'a').close()
+versionNum = '1.1.3'
 
-if not os.path.exists('message_template.txt'):
-    with open('message_template.txt', 'w') as template_file:
+cloneids = 'user_ids.txt'
+template = 'message_template.txt'
+notes = 'patch_notes.txt'
+
+# Check and create necessary directories and files
+if not os.path.exists(cloneids):
+    open(cloneids, 'a').close()
+
+if not os.path.exists(template):
+    with open(template, 'w') as template_file:
         template_file.write('User IDs:\n{user_ids}')
+
+if not os.path.exists(notes):
+    open(notes, 'a').close()
 
 @bot.event
 async def on_ready():
@@ -70,6 +79,28 @@ async def clone_list(ctx):
     
         # Send the formatted message
         await ctx.send(formatted_message)
+
+@bot.hybrid_command(name='ping', guild=output_server_id, description='Pong!')
+async def ping(ctx):
+    await ctx.send("Pong! 🏓")
+
+@bot.hybrid_command(name='pong', guild=output_server_id, description='Ping!')
+async def pong(ctx):
+    await ctx.send("Ping! 🏓")
+
+@bot.hybrid_command(name='version', guild=output_server_id, description='Lists the current bot\'s version!')
+async def version(ctx):
+    await ctx.send(f"The current bot version is __**{versionNum}**__.")
+
+@bot.hybrid_command(name='patch-notes', guild=output_server_id, description='Tells you the patch notes.')
+async def patch_note(ctx):
+    if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
+        with open(notes, 'r') as file:
+            message = file.readlines()
+            message = ''.join(message)
+            await ctx.send(f'''# Version {versionNum} patch notes:
+
+{message}''')
 
 # Run the bot with your token
 bot.run(os.environ['TOKEN'])
