@@ -1,4 +1,0 @@
-# List of All Known Clones:
-
-{user_ids}
-### `(Do keep in mind this list doesn't have every clone on here!)`
