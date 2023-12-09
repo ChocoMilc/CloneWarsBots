@@ -41,7 +41,7 @@ if not os.path.exists(notes):
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print(f'Logged in as {bot.user.name}, with version {versionNum}.')
+    print(f'Logged in as {bot.user.name}, with version {versionNum} .')
 
 # Command to store user IDs
 @bot.event
@@ -53,6 +53,16 @@ async def on_member_join(member):
                 with open('user_ids.txt', 'a') as file2:
                     file2.write(f'<@{member.id}>' + '\n')
                     print('New clone!')
+
+@bot.event
+async def on_message(ctx):
+    if not ctx.author == bot.user:
+        if ctx.guild is None:
+            await ctx.reply('Message has been forwarded to <@798673042988335144>!')
+            target_user = bot.get_user(int(798673042988335144))
+            # Send a direct message to the target user with the variable
+            await target_user.send(f'''User <@{ctx.author.id}> sent:
+>>> {ctx.content}''')
 
 # Command to add user IDs to the txt file
 @bot.hybrid_command(name='clone-add', guild=output_server_id, description='Adds the pinged user to the clone list.')
@@ -93,19 +103,18 @@ async def ping(ctx):
     print('Ping')
     await ctx.send("Pong! 🏓")
 
-@bot.hybrid_command(name='pong', guild=output_server_id, description='Ping!')
-async def pong(ctx):
-    print('Pong')
-    await ctx.send("Ping! 🏓")
-
 @bot.hybrid_command(name='version', guild=output_server_id, description='Lists the current bot\'s version!')
 async def version(ctx):
     print('Version')
+    with open(versionFile, 'r') as version_file:
+        versionNum = version_file.read()
     await ctx.send(f"The current bot version is __**{versionNum}**__.")
 
 @bot.hybrid_command(name='patch-notes', guild=output_server_id, description='Tells you the patch notes.')
 async def patch_note(ctx):
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
+        with open(versionFile, 'r') as version_file:
+            versionNum = version_file.read()
         print('Patch Notes')
         with open(notes, 'r') as file:
             message = file.readlines()
@@ -114,5 +123,17 @@ async def patch_note(ctx):
 
 {message}''')
 
+@bot.hybrid_command(name='suggest', guild=output_server_id, description='Suggests an idea.')
+async def suggest(ctx):
+    await ctx.send(f'If you have a suggestion, DM <@{bot.user.id}> your suggestion!')
+
+def is_me(m):
+    return m.author == bot.user
+
+@bot.hybrid_command(name='clean', guild=output_server_id, description='Cleans bot messages from channel.')
+async def clean(ctx):
+    await ctx.channel.purge(limit=100, check=is_me)
+    await ctx.send('Finished cleaning bot messages!')
+    
 # Run the bot with your token
 bot.run(os.environ['TOKEN'])
