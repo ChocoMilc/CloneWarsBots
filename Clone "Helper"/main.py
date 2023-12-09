@@ -42,6 +42,7 @@ async def on_member_join(member):
 # Command to add user IDs to the txt file
 @bot.hybrid_command(name='clone-add', guild=output_server_id, description='Adds the pinged user to the clone list.')
 async def clone_add(ctx, user: discord.User):
+    user = user.id
     if ctx.guild.id == output_server_id and ctx.channel.id == channel_id:
         if user not in user_whitelist:
             with open('user_ids.txt', 'r') as file:
